@@ -1,14 +1,34 @@
 class Test {
-    void ifTest() {
-        int x = 1;
-        if (x == 1) {
-            if (x > 0) {
-                x = 1;
-            }
-            x = 2;
-        } else {
-            x = 3;
+    // void ifTest() {
+    //     int x = 1;
+    //     if (x == 1) {
+    //         if (x > 0) {
+    //             x = 1;
+    //         }
+    //         x = 2;
+    //     } else {
+    //         x = 3;
+    //     }
+    // }
+
+    // void whileTest() {
+    //     int a  = 1;
+    //     while(a < 10) {
+    //         if(a == 5) {
+    //             a --;
+    //         }
+
+    //         a += 3;
+    //     }
+
+    //     int b = 1;
+    // }
+
+    void forTest() {
+        for (int i = 0; i < 10; ++i) {
+            i += 1;
         }
+        int a = 2;
     }
 
     // void ifTest1() {

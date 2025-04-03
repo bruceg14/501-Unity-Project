@@ -21,7 +21,7 @@ class CFG_Edge {
 class CFG_Graph {
     public List<CFG_Node> nodes;
     public List<CFG_Edge> edges;
-
+    
     public CFG_Graph() {
         nodes = new List<CFG_Node>();
         edges = new List<CFG_Edge>();
@@ -33,6 +33,7 @@ class CFG_Graph {
     }
 
     public void AddNode(CFG_Node node) {
+        Console.WriteLine($"Adding node, Node {node.id}: {node.content}");
         nodes.Add(node);
     }
 
@@ -41,11 +42,14 @@ class CFG_Graph {
     }
 
     public void PrintGraph() {
-        foreach (var node in nodes) {
-            Console.WriteLine($"Node {node.id}: {node.content}");
-        }
+        // foreach (var node in nodes) {
+        //     Console.WriteLine($"Node {node.id}: {node.content}");
+        // }
+        // foreach (var edge in edges) {
+        //     Console.WriteLine($"Edge from {edge.source.id} to {edge.target.id}");
+        // }
         foreach (var edge in edges) {
-            Console.WriteLine($"Edge from {edge.source.id} to {edge.target.id}");
+            Console.WriteLine($"{edge.source.id} -> {edge.target.id};");
         }
     }
 }
@@ -99,6 +103,60 @@ class CFG{
                 }
 
                 node = afterIfNode;
+            } else if (statement is WhileStatementSyntax) {
+                var whileNode = new CFG_Node { id = graph.nodes.Count, content = "While statement" };
+                graph.AddNode(whileNode);
+                graph.AddEdge(new CFG_Edge { source = node, target = whileNode });
+
+                var whileStatement = (WhileStatementSyntax)statement;
+                var whileBlock = whileStatement.Statement as BlockSyntax;
+                var whileBodyNode = new CFG_Node { id = graph.nodes.Count, content = "While body" };
+                graph.AddNode(whileBodyNode);
+                graph.AddEdge(new CFG_Edge { source = whileNode, target = whileBodyNode });
+
+
+                var afterWhileNode = new CFG_Node { id = graph.nodes.Count, content = "After while" };
+                graph.AddNode(afterWhileNode);
+                graph.AddEdge(new CFG_Edge { source = whileNode, target = afterWhileNode });
+
+                if (whileBlock!= null && whileBlock.Statements.Count > 0) {
+                    var exitWhileNode = RecursiveCFGCreation(whileBlock.Statements, whileBodyNode);
+                    graph.AddNode(exitWhileNode);
+                    graph.AddEdge(new CFG_Edge { source = exitWhileNode, target = whileNode });
+                }
+                
+                node = afterWhileNode;
+            } else if (statement is ForStatementSyntax){ // Same logic as while
+                var forNode = new CFG_Node { id = graph.nodes.Count, content = "For statement"};
+                graph.AddNode(forNode);
+                graph.AddEdge(new CFG_Edge { source = node, target = forNode});
+
+                var forStatement = (ForStatementSyntax) statement;
+                var forBlock = forStatement.Statement as BlockSyntax;
+
+                var forBodyNode = new CFG_Node { id = graph.nodes.Count, content = "For body" };
+                graph.AddNode(forBodyNode);
+                graph.AddEdge(new CFG_Edge { source = forNode, target = forBodyNode });
+                var afterForNode = new CFG_Node { id = graph.nodes.Count, content = "After for" };
+                graph.AddNode(afterForNode);
+                graph.AddEdge(new CFG_Edge { source = forNode, target = afterForNode });
+                if (forBlock!= null && forBlock.Statements.Count > 0) {
+                    var exitForNode = RecursiveCFGCreation(forBlock.Statements, forBodyNode);
+                    graph.AddNode(exitForNode);
+                    graph.AddEdge(new CFG_Edge { source = exitForNode, target = forNode });
+                }
+                
+                node = afterForNode;
+            } else if (statement is SwitchStatementSyntax) {
+
+
+            } else {
+                
+                var statementNode = new CFG_Node { id = graph.nodes.Count, content = statement.ToString() };
+                // Console.WriteLine($"I am here {statementNode.content}");
+                graph.AddNode(statementNode);
+                graph.AddEdge(new CFG_Edge { source = node, target = statementNode });
+                node = statementNode;
             }
             
         }
