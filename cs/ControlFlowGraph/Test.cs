@@ -24,12 +24,12 @@ class Test {
     //     int b = 1;
     // }
 
-    void forTest() {
-        for (int i = 0; i < 10; ++i) {
-            i += 1;
-        }
-        int a = 2;
-    }
+    // void forTest() {
+    //     for (int i = 0; i < 10; ++i) {
+    //         i += 1;
+    //     }
+    //     int a = 2;
+    // }
 
     // void ifTest1() {
     //     int x = 1;
@@ -39,6 +39,27 @@ class Test {
     //         x = 3;
     //     }
     // }
+
+    void switchTest() {
+        int x = 1;
+        switch (x) {
+            case 1:
+                if (x == 1) {
+                    x += 1;
+                } else {
+                    x = 3;
+                }
+                break;
+            case 2:
+                for (int i = 0; i < 10; ++i) {
+                    i += 1;
+                }
+                break;
+            default:
+                x = 4;
+                break;
+        }
+    }
 
 
 }

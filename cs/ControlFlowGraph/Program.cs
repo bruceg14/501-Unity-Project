@@ -33,7 +33,7 @@ class CFG_Graph {
     }
 
     public void AddNode(CFG_Node node) {
-        Console.WriteLine($"Adding node, Node {node.id}: {node.content}");
+        // Console.WriteLine($"Adding node, Node {node.id}: {node.content}");
         nodes.Add(node);
     }
 
@@ -148,15 +148,36 @@ class CFG{
                 
                 node = afterForNode;
             } else if (statement is SwitchStatementSyntax) {
+                var switchStatement = (SwitchStatementSyntax) statement;
 
+                var switchNode = new CFG_Node {id = graph.nodes.Count, content = "Switch"};
+                graph.AddNode(switchNode);
+                graph.AddEdge(new CFG_Edge {source = node, target = switchNode});
 
-            } else {
-                
+                var afterSwitchNode = new CFG_Node { id = graph.nodes.Count, content = "After Switch" };
+                graph.AddNode(afterSwitchNode);
+
+                var switchBlock = switchStatement.Sections; // SyntaxList<SwitchSectionSyntax>
+                foreach (var switchSec in switchBlock) {
+                    var switchSectionNode = new CFG_Node { id = graph.nodes.Count, content = "One switch branch" };
+                    graph.AddNode(switchSectionNode);
+                    graph.AddEdge(new CFG_Edge { source = switchNode, target = switchSectionNode });
+                    
+                    var switchSectionBody = switchSec.Statements ;
+                    Console.WriteLine($"switch section body: {switchSectionBody}");
+                    Console.WriteLine($"switch section body: {switchSectionBody.GetType()}");
+                    var exitSwitchSectionNode = RecursiveCFGCreation(switchSectionBody, switchSectionNode);
+                    graph.AddEdge(new CFG_Edge { source = exitSwitchSectionNode, target = afterSwitchNode });
+                }
+
+                node = afterSwitchNode;
+
+            } else {     
                 var statementNode = new CFG_Node { id = graph.nodes.Count, content = statement.ToString() };
-                // Console.WriteLine($"I am here {statementNode.content}");
                 graph.AddNode(statementNode);
                 graph.AddEdge(new CFG_Edge { source = node, target = statementNode });
                 node = statementNode;
+                
             }
             
         }
