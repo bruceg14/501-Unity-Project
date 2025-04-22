@@ -2,6 +2,8 @@
 
 ## The repository is organized in three parts: Blueprint, CS, and UVS, each representing a language
 
+## The report is also in the root directory as "zguo20_501_Final_Report"
+
 ## Blueprint directory
 This directory contains all the codes needed for the generation of Unreal Engine Blueprint control flow graph.
 
@@ -24,6 +26,8 @@ The **file_extraction.py** is a file to generate a JSON that store the Blueprint
 Functional component to generate CFG and calculate CC is located in the **cs/ControlFlowGraph/Program.cs**. The **Test.cs** in that directory is just for the testing of the CFG generator. 
 
 The files I used  to calculate CC are stored in the **cs/ControlFlowGraph/transformed_files**
+
+Noted that for the program you run you need to update the ControlFlowGraph.csproj to have Unity required dependency.
 
 To run the CC calculation, cd into the cs/ControlFlowGraph/. Then run
 ```bash
