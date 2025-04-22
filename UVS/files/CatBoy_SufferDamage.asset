@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e66c6366d904e98bc83428217d4fd7, type: 3}
+  m_Name: SufferDamage
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"graph":{"variables":{"collection":{"$content":[],"$version":"A"},"$version":"A"},"controlInputDefinitions":[],"controlOutputDefinitions":[],"valueInputDefinitions":[],"valueOutputDefinitions":[],"title":null,"summary":null,"pan":{"x":-14.0,"y":-25.0},"zoom":1.0,"elements":[{"type":"System.Int32","value":{"$content":1,"$type":"System.Int32"},"defaultValues":{},"position":{"x":-101.0,"y":57.0},"guid":"d9a1b5a6-58d8-4c6a-b69e-f13232bd98c2","$version":"A","$type":"Unity.VisualScripting.Literal","$id":"9"},{"argumentCount":1,"defaultValues":{"name":{"$content":"Damage","$type":"System.String"},"target":null},"position":{"x":108.0,"y":-115.0},"guid":"bc3928ca-9393-4eaa-b3cb-69da2baefe86","$version":"A","$type":"Unity.VisualScripting.TriggerCustomEvent","$id":"11"},{"nest":{"source":"Macro","macro":0,"embed":null},"defaultValues":{"Tag":{"$content":"Player","$type":"System.String"}},"position":{"x":-254.0,"y":-116.0},"guid":"9ba631d1-a9ff-4025-afa5-50975844b211","$version":"A","$type":"Unity.VisualScripting.SuperUnit","$id":"13"},{"sourceUnit":{"$ref":"13"},"sourceKey":"Trigger
+      Check","destinationUnit":{"$ref":"11"},"destinationKey":"enter","guid":"d682c4a3-b84c-4eb0-a890-8a1725c25ab9","$type":"Unity.VisualScripting.ControlConnection"},{"sourceUnit":{"$ref":"9"},"sourceKey":"output","destinationUnit":{"$ref":"11"},"destinationKey":"argument_0","guid":"35a062d1-f9fa-4a88-8a3c-d9abc85c6631","$type":"Unity.VisualScripting.ValueConnection"},{"sourceUnit":{"$ref":"13"},"sourceKey":"Trigger","destinationUnit":{"$ref":"11"},"destinationKey":"target","guid":"17995656-87b5-4aff-a2ea-fe0f7132d0ac","$type":"Unity.VisualScripting.ValueConnection"}],"$version":"A"}}'
+    _objectReferences:
+    - {fileID: 11400000, guid: ebefe0fbbae829149a6cc77e92d35928, type: 2}

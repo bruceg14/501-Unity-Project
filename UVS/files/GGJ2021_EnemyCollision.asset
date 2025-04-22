@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e66c6366d904e98bc83428217d4fd7, type: 3}
+  m_Name: EnemyCollision
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"graph":{"variables":{"collection":{"$content":[],"$version":"A"},"$version":"A"},"controlInputDefinitions":[],"controlOutputDefinitions":[],"valueInputDefinitions":[],"valueOutputDefinitions":[],"title":null,"summary":null,"pan":{"x":331.0104,"y":188.9341},"zoom":0.4333332,"elements":[{"coroutine":false,"defaultValues":{"target":null},"position":{"x":-369.0,"y":-92.0},"guid":"32156d2e-422d-4255-b01f-a871f93cd3ae","$version":"A","$type":"Unity.VisualScripting.OnCollisionEnter"},{"position":{"xMin":-396.6,"yMin":-207.3999,"xMax":725.4004,"yMax":325.6002},"label":"Load
+      battle scene and destroy object","comment":null,"color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"guid":"d769d905-2c2b-415a-9a5c-91a2a8b25b47","$version":"A","$type":"Unity.VisualScripting.GraphGroup"}],"$version":"A"}}'
+    _objectReferences: []

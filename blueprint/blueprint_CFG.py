@@ -4,7 +4,27 @@ import json
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '.')) 
+
+def calculate_cyclomatic_complexity(nodes, edges):
+    num_edges = len(edges)
+    num_nodes = len(nodes)
+    num_end_nodes = 0
+    dicts = {}
+    for node in nodes:
+        dicts[node.id] = 0
+    
+    for edge in edges:
+        if edge.source in dicts:
+            dicts[edge.source] = 1
+
+    for node in nodes:
+        if node.id in dicts and dicts[node.id] == 0:
+            num_end_nodes += 1
+
+    cyclomatic_complexity = num_edges - num_nodes + 2 * num_end_nodes
+    return cyclomatic_complexity
 
 class Node:
     def __init__(self, content, branch_type="none", id=0):
@@ -81,6 +101,9 @@ def recursive(BP_node, graph, last_node): # BP_node is a Node class, graph is CF
     cur_node = graph.add_node(BP_node.get_content())
     graph.add_edge(last_node, cur_node)
     last_node = cur_node
+    print("I am looping crazy")
+    print("BP_node", BP_node.get_content())
+    print("children", BP_node.get_children())
     while(len(BP_node.get_children()) > 0):
         child_nodes = BP_node.get_children()
         if BP_node.get_content() == "IfNode":
@@ -140,8 +163,13 @@ def recursive(BP_node, graph, last_node): # BP_node is a Node class, graph is CF
                 graph.add_edge(after_body_node, after_switch_node)    
             return after_switch_node
         else:  
+            print("BP_node.get_content()", BP_node.get_content())
+            print("child_nodes", child_nodes)
+            print("key", key)
             BP_node = child_nodes[0]
+            # print("I am here")
         BP_node = child_nodes[0]    
+
     return last_node
 
 ######################################################################################################################
@@ -149,107 +177,151 @@ def recursive(BP_node, graph, last_node): # BP_node is a Node class, graph is CF
 with open('./blueprint_graphs_Uber.json', 'r') as f:
     blueprint_graph_data = json.load(f)
 
-# for key, item in blueprint_graph_data.items():
+total_CC = 0
+graph_count = 0
 
-graph_dict = {}
-# "c190fccf-19dd-49c2-a387-e3aa9624bb9d" Switch and if
-graph_uuid = "a582bbdf-00a5-4d6c-bded-40b9d9cab723"
+for key, item in blueprint_graph_data.items():
+    graph_dict = {}
 
-ret = blueprint_graph_data[graph_uuid]
-nodes = ret["nodes"]
-edges = ret["edges"]
+    go_to_next_graph = False
 
-nodes_dict = {node[0] : node[1:4] for node in nodes} # Format for nodes_dict: {node_uuid : (node_type, node_pos_x, node_pos_y)}
+    ret = item # Nodes and edges for a graph
 
-# Process the nodes given that the database doesn't autmotically indicate the node type for branching
-for edge in edges:
-    source = edge[0]
-    destination = edge[1]
-    pin1_name = edge[2]
-    pin_direction = edge[3]
-    print("pin1_name", pin1_name)
-    # This mean this is a for loop node
-    if "LoopBody" in pin1_name:
-        print("I have a loopbody here")
+    # ret = blueprint_graph_data["486e2288-0f4a-42ed-929c-7111d26f3c0e"]
+    print("Parsing", key)
+    nodes = ret["nodes"]
+    edges = ret["edges"]
 
-        # This mean it is a loop but not sure if it is a for loop or while loop
-        nodes_dict[source][0] = "LoopNode"
-    elif "FirstIndex" in pin1_name: #Now its a for loop
-        nodes_dict[source][0] = "LoopNode"
-    elif "LastIndex" in pin1_name:
-        nodes_dict[source][0] = "LoopNode"
-    elif "Index" in pin1_name:
-        nodes_dict[source][0] = "LoopNode"
-    elif "Completed" in pin1_name:
-        nodes_dict[source][0] = "LoopNode"
-    # If the node is a while loop
-    if "Condition" in pin1_name:
-        nodes_dict[source][0] = "LoopNode"
+    # knots = set()
+    # for node in nodes:
+    #     if node[1] == 'Knot':
+    #         knots.add(node[0])
 
-for node in nodes:
-    if "IfThenElse" in nodes_dict[node[0]][0]:
-        nodes_dict[node[0]][0] = "IfNode"
-    if "Switch" in nodes_dict[node[0]][0]:
-        nodes_dict[node[0]][0] = "SwitchNode"
+    nodes_dict = {node[0] : node[1:4] for node in nodes} # Format for nodes_dict: {node_uuid : (node_type, node_pos_x, node_pos_y)}
 
-# Continue to process the graph by labeling node's branch type
-for edge in edges:
-    source = edge[0]
-    destination = edge[1]
-    pin1_name = edge[2]
-    pin_direction = edge[3]
-    if pin_direction == "EGPD_Output":
-        source_node = nodes_dict[source]
-        branch_type = "none"
-        # print(source_node)
-        if source_node[0] == "LoopNode":
-            if "LoopBody" in pin1_name:
-                branch_type = "loop_body"
-            elif "FirstIndex" in pin1_name:
-                branch_type = "none_branching"
-            elif "LastIndex" in pin1_name:
-                branch_type = "none_branching"
-            elif "Index" in pin1_name:
-                branch_type = "none_branching"
-            elif "Completed" in pin1_name:
-                branch_type = "exit_loop"
-            elif "Condition" in pin1_name:
-                branch_type = "none_branching"
+    # Filter for None and Knot nodes
+    for node in nodes:
+        if node[1] == 'Knot':
+            go_to_next_graph = True
+            break
+    for edge in edges:
+        if edge[0] is None or edge[1] is None:
+            go_to_next_graph = True
+            break
+        if edge[0] not in nodes_dict or edge[1] not in nodes_dict:
+            go_to_next_graph = True
+            break
+    if go_to_next_graph:
+        continue
+
+
+    # Process the nodes given that the database doesn't autmotically indicate the node type for branching
+    for edge in edges:
+        source = edge[0]
+        destination = edge[1]
+        pin1_name = edge[2]
+        pin_direction = edge[3]
+        # This mean this is a for loop node
+        if "LoopBody" in pin1_name:
+            # This mean it is a loop but not sure if it is a for loop or while loop
+            nodes_dict[source][0] = "LoopNode"
+        elif "FirstIndex" in pin1_name: #Now its a for loop
+            nodes_dict[source][0] = "LoopNode"
+        elif "LastIndex" in pin1_name:
+            nodes_dict[source][0] = "LoopNode"
+        elif "Index" in pin1_name:
+            nodes_dict[source][0] = "LoopNode"
+        elif "Completed" in pin1_name:
+            nodes_dict[source][0] = "LoopNode"
+        # If the node is a while loop
+        if "Condition" in pin1_name:
+            # print("source", source)
+            # print("nodes_dict", nodes_dict)
+            nodes_dict[source][0] = "LoopNode"
+
+    
+
+    for node in nodes:
+        # print("node", node)
+        # print("nodes_dict", nodes_dict)
+        if "IfThenElse" in nodes_dict[node[0]][0]:
+            nodes_dict[node[0]][0] = "IfNode"
+        if "Switch" in nodes_dict[node[0]][0]:
+            nodes_dict[node[0]][0] = "SwitchNode"
+
+    # Continue to process the graph by labeling node's branch type
+    for edge in edges:
+        source = edge[0]
+        destination = edge[1]
+        pin1_name = edge[2]
+        pin_direction = edge[3]
+        if pin_direction == "EGPD_Output":
+            source_node = nodes_dict[source]
+            branch_type = "none"
+            # print(source_node)
+            if source_node[0] == "LoopNode":
+                if "LoopBody" in pin1_name:
+                    branch_type = "loop_body"
+                elif "FirstIndex" in pin1_name:
+                    branch_type = "none_branching"
+                elif "LastIndex" in pin1_name:
+                    branch_type = "none_branching"
+                elif "Index" in pin1_name:
+                    branch_type = "none_branching"
+                elif "Completed" in pin1_name:
+                    branch_type = "exit_loop"
+                elif "Condition" in pin1_name:
+                    branch_type = "none_branching"
+                else:
+                    branch_type = "none_branching"
+
+            elif source_node[0] == "IfNode":
+                if "then" in pin1_name:
+                    branch_type = "if_true"
+                elif "else" in pin1_name:
+                    branch_type = "if_false"
+            elif source_node[0] == "SwitchNode" and  pin_direction == "EGPD_Output":
+                branch_type = "switch_output"
+
+            if source not in graph_dict:
+                graph_dict[source] = Node(nodes_dict[source][0], "none" ,source)
+            
+            if destination not in graph_dict:
+                graph_dict[destination] = Node(nodes_dict[destination][0], branch_type, destination)
             else:
-                branch_type = "none_branching"
+                if branch_type != "none":
+                    graph_dict[destination].branch_type = branch_type
 
-        elif source_node[0] == "IfNode":
-            if "then" in pin1_name:
-                branch_type = "if_true"
-            elif "else" in pin1_name:
-                branch_type = "if_false"
-        elif source_node[0] == "SwitchNode" and  pin_direction == "EGPD_Output":
-            branch_type = "switch_output"
+            if branch_type != "none_branching":
+                graph_dict[source].add_child(graph_dict[destination])
 
-        if source not in graph_dict:
-            graph_dict[source] = Node(nodes_dict[source][0], "none" ,source)
-        
-        if destination not in graph_dict:
-            graph_dict[destination] = Node(nodes_dict[destination][0], branch_type, destination)
-        else:
-            if branch_type != "none":
-                graph_dict[destination].branch_type = branch_type
+    # Find the starting node
+    # Blueprint has an "Event" node as implicit entry point. I am using that as to generate the CFG
+    event_node = None
+    for node in nodes:
+        if node[1] == 'Event':
+            print("Found Event node", node[0])
+            event_node = node[0]
+            break
 
-        if branch_type != "none_branching":
-            graph_dict[source].add_child(graph_dict[destination])
+    # print("node", event_node)
+    if event_node is None:
+        print("No Event node found")
+        continue
 
-# Find the starting node
-# Blueprint has an "Event" node as implicit entry point. I am using that as to generate the CFG
-event_node = None
-for node in nodes:
-    if node[1] == 'Event':
-        event_node = node[0]
+    if event_node not in graph_dict:
+        print("Event node not in graph_dict")
+        continue
+    start_node = graph_dict[event_node] #Event node
+    graph = CFG_Graph()
+    entry_node = graph.add_node("Entry")
+    recursive(start_node, graph, entry_node)
+    graph.print_graph()   
+    cc_value = calculate_cyclomatic_complexity(graph.nodes, graph.edges)
+    print("Cyclomatic Complexity: ", cc_value)
+    total_CC += cc_value
+    graph_count += 1
 
-# print("node", event_node)
-
-start_node = graph_dict[event_node] #Event node
-graph = CFG_Graph()
-entry_node = graph.add_node("Entry")
-recursive(start_node, graph, entry_node)
-graph.print_graph()   
-
+print("Total Cyclomatic Complexity: ", total_CC)
+print("Number of graphs: ", graph_count)
+print("Average Cyclomatic Complexity: ", total_CC / graph_count)

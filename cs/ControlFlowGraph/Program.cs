@@ -33,7 +33,6 @@ class CFG_Graph {
     }
 
     public void AddNode(CFG_Node node) {
-        // Console.WriteLine($"Adding node, Node {node.id}: {node.content}");
         nodes.Add(node);
     }
 
@@ -42,12 +41,6 @@ class CFG_Graph {
     }
 
     public void PrintGraph() {
-        // foreach (var node in nodes) {
-        //     Console.WriteLine($"Node {node.id}: {node.content}");
-        // }
-        // foreach (var edge in edges) {
-        //     Console.WriteLine($"Edge from {edge.source.id} to {edge.target.id}");
-        // }
         foreach (var edge in edges) {
             Console.WriteLine($"{edge.source.id} -> {edge.target.id};");
         }
@@ -81,7 +74,7 @@ class CFG{
 
                 Console.WriteLine($"Then block: {thenBlock}");
                 // Create nodes for the then and else blocks
-                if(thenBlock.Statements.Count > 0) {
+                if(thenBlock != null && thenBlock.Statements.Count > 0) {
                     var exitThenNode = RecursiveCFGCreation(thenBlock.Statements, thenNode); 
                     if (exitThenNode != null) {
                         graph.AddEdge(new CFG_Edge { source = exitThenNode, target = afterIfNode });
@@ -185,20 +178,56 @@ class CFG{
         return node;
     }
 
+    public int GetCyclomaticComplexity() {
+        int num_nodes = graph.nodes.Count;
+        int num_edges = graph.edges.Count;
+        int num_end_nodes = 0;
+        var nodes = graph.nodes;
+        var edges = graph.edges;
+        var dicts = new Dictionary<int, int>();
+        for (var i = 0; i < num_nodes; i++) {
+            dicts.Add(i, 0);
+        }
+        foreach (var edge in edges) {
+            if (dicts.ContainsKey(edge.source.id)) {
+                dicts[edge.source.id] = 1;
+            }
+        }
+        foreach (var node in nodes) {
+            if (dicts.ContainsKey(node.id) && dicts[node.id] == 0) {
+                num_end_nodes++;
+            }
+        }
+        int cyclomatic_complexity = num_edges - num_nodes + 2 * num_end_nodes;
+        return cyclomatic_complexity;
+    }
+
     public static void Main(string[] args)
     {
-        var sourceCode = File.ReadAllText("Test.cs");
-        var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
-        var root = syntaxTree.GetRoot();
-        
-        var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
-        foreach (var method in methods)
-        {   
-            var controlFlowGraph = new CFG();
-            var entryNode = new CFG_Node { id = 0, content = "Entry" };
-            controlFlowGraph.graph.AddNode(entryNode);
-            controlFlowGraph.RecursiveCFGCreation(method.Body.Statements, entryNode);
-            controlFlowGraph.graph.PrintGraph();
+        int totalCC = 0;
+        int totalPrograms = 0;
+        foreach (var file in Directory.GetFiles("./transformed_files", "*.cs"))
+        {
+            Console.WriteLine(file);
+            var sourceCode = File.ReadAllText(file);
+            var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
+            var root = syntaxTree.GetRoot();
+            var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
+            foreach (var method in methods)
+            {
+                var controlFlowGraph = new CFG();
+                var entryNode = new CFG_Node { id = 0, content = "Entry" };
+                controlFlowGraph.graph.AddNode(entryNode);
+                controlFlowGraph.RecursiveCFGCreation(method.Body.Statements, entryNode);
+                controlFlowGraph.graph.PrintGraph();
+                totalCC += controlFlowGraph.GetCyclomaticComplexity();
+                totalPrograms++;
+                Console.WriteLine($"Cyclomatic complexity of method {method.Identifier} is: {controlFlowGraph.GetCyclomaticComplexity()}");
+            }
+            Console.WriteLine($"Total cyclomatic complexity of the class is: {totalCC}");
+            Console.WriteLine($"Total number of methods is: {totalPrograms}");
+            Console.WriteLine($"Average cyclomatic complexity of the class is: {totalCC / totalPrograms}");
         }
+       
     }
 }

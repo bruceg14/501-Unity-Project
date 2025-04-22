@@ -31,7 +31,9 @@ def parse_graph_elements(graph_data):
         {
             "source": edge["sourceUnit"]["$ref"],
             "destination": edge["destinationUnit"]["$ref"],
-            "type": edge["$type"]
+            "type": edge["$type"],
+            "sourceKey": edge["sourceKey"] if "sourceKey" in edge else None,
+            "destinationKey": edge["destinationKey"] if "destinationKey" in edge else None,
         } for edge in edges
     ]
 

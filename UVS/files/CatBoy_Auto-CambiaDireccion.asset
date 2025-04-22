@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e66c6366d904e98bc83428217d4fd7, type: 3}
+  m_Name: Auto-CambiaDireccion
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"graph":{"variables":{"collection":{"$content":[],"$version":"A"},"$version":"A"},"controlInputDefinitions":[],"controlOutputDefinitions":[],"valueInputDefinitions":[],"valueOutputDefinitions":[],"title":"Idle","summary":null,"pan":{"x":-199.7513,"y":164.2521},"zoom":0.6,"elements":[{"defaultValues":{"duration":{"$content":2.0,"$type":"System.Single"},"unscaledTime":{"$content":false,"$type":"System.Boolean"}},"position":{"x":-268.0,"y":-121.0},"guid":"22c18fe9-64c2-4698-923a-8652a6a959f1","$version":"A","$type":"Unity.VisualScripting.Timer","$id":"9"},{"defaultValues":{},"position":{"x":52.0,"y":-67.0},"guid":"d5c781b6-f241-46d8-b152-d3b358e9ef23","$version":"A","$type":"Unity.VisualScripting.TriggerStateTransition","$id":"11"},{"coroutine":false,"defaultValues":{},"position":{"x":-508.0,"y":-183.0},"guid":"b5344bbd-0d40-4d9d-9eef-0fc01de7a009","$version":"A","$type":"Unity.VisualScripting.OnEnterState","$id":"13"},{"specifyFallback":false,"kind":"Scene","defaultValues":{"name":{"$content":"Duration","$type":"System.String"}},"position":{"x":-506.0,"y":-14.0},"guid":"229cdf59-c815-479b-83ce-18767dfbcab0","$version":"A","$type":"Unity.VisualScripting.GetVariable"},{"sourceUnit":{"$ref":"9"},"sourceKey":"completed","destinationUnit":{"$ref":"11"},"destinationKey":"trigger","guid":"cdcf348f-1f72-46cb-92a0-cdacc0862cfc","$type":"Unity.VisualScripting.ControlConnection"},{"sourceUnit":{"$ref":"13"},"sourceKey":"trigger","destinationUnit":{"$ref":"9"},"destinationKey":"start","guid":"5ba8445c-8e5e-42e7-8e03-f3979483fb1c","$type":"Unity.VisualScripting.ControlConnection"}],"$version":"A"}}'
+    _objectReferences: []
